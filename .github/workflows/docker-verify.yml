@@ -34,12 +34,6 @@ jobs:
           done
           curl -f http://localhost:3000/api/health
 
-      - name: Container runs as a non-root user
-        run: |
-          uid=$(docker compose exec -T peakhook id -u)
-          echo "container uid: $uid"
-          test "$uid" != "0"
-
       - name: SQLite write works on the mounted ./data volume
         run: |
           # Authenticated call that inserts rows into SQLite (proves better-sqlite3 + volume permissions).
@@ -48,6 +42,16 @@ jobs:
           curl -f -sS -u "admin:changeme" "http://localhost:3000/api/logs?limit=5" | grep -q '"logs"'
           ls -la data
           test -s data/peakhook.db
+
+      - name: App process runs as the non-root "node" user
+        run: |
+          # `docker exec` starts as the image default (root), so inspect the running server process instead.
+          docker compose exec -T peakhook ps -o user,args
+          docker compose exec -T peakhook ps -o user,args | grep "[n]ode server.js" | grep -q "^node"
+          # The database file is created by that process: it must be owned by uid 1000 (node), not root.
+          owner=$(docker compose exec -T peakhook stat -c %u /app/data/peakhook.db)
+          echo "peakhook.db owner uid: $owner"
+          test "$owner" != "0"
 
       - name: Docker HEALTHCHECK reports healthy
         run: |
