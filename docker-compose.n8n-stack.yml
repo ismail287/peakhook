@@ -1,0 +1,86 @@
+# PeakHook + n8n + Postgres on one private Docker network.
+#
+#   cp .env.example .env      # then set ADMIN_PASSWORD, POSTGRES_PASSWORD and N8N_ENCRYPTION_KEY
+#   docker compose -f docker-compose.n8n-stack.yml up -d
+#
+# PeakHook  ->  http://localhost:3000   (capture, inspect, replay)
+# n8n       ->  http://localhost:5678
+#
+# Inside this stack PeakHook reaches n8n by service name. In PeakHook set an endpoint's
+# forward URL to:  http://n8n:5678/webhook/<your-webhook-path>
+# (use /webhook-test/<path> while you are testing a workflow in the n8n editor).
+name: peakhook-stack
+
+services:
+  peakhook:
+    build: .
+    image: peakhook:latest
+    container_name: peakhook
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      DEFAULT_FORWARD_URL: ${DEFAULT_FORWARD_URL:-}
+      RETENTION_DAYS: ${RETENTION_DAYS:-30}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      PUBLIC_URL: ${PUBLIC_URL:-}
+    volumes:
+      - ./data:/app/data
+    networks: [peaknet]
+
+  n8n:
+    image: n8nio/n8n:${N8N_VERSION:-latest}
+    container_name: peakhook-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: "5432"
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB:-n8n}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER:-n8n}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?Set N8N_ENCRYPTION_KEY in .env (any long random string)}
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5678/}
+      # n8n sets login cookies as Secure by default; set to true once you serve it over HTTPS.
+      N8N_SECURE_COOKIE: ${N8N_SECURE_COOKIE:-false}
+      GENERIC_TIMEZONE: ${TZ:-UTC}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [peaknet]
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: peakhook-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-n8n}
+      POSTGRES_USER: ${POSTGRES_USER:-n8n}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    # No ports published: the database is only reachable from inside the stack.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-n8n} -d $${POSTGRES_DB:-n8n}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [peaknet]
+
+networks:
+  peaknet:
+    driver: bridge
+
+volumes:
+  n8n_data:
+  postgres_data:

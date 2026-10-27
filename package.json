@@ -1,0 +1,20 @@
+{
+  "name": "peakhook",
+  "version": "1.0.0",
+  "description": "Self-hosted webhook vault, inspector and replay gateway for n8n, Make and Zapier.",
+  "main": "server.js",
+  "license": "MIT",
+  "author": "Peak Automations <marketing@peakautomations.online> (https://peakautomations.online)",
+  "homepage": "https://peakautomations.online/tools/",
+  "keywords": ["webhook", "n8n", "make", "zapier", "self-hosted", "inspector", "replay", "sqlite"],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/smoke.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1"
+  }
+}

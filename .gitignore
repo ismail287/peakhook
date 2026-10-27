@@ -1,0 +1,13 @@
+node_modules
+.env
+*.log
+npm-debug.log*
+.DS_Store
+
+# local editor/agent config
+.claude/
+
+# local SQLite data (keep the folder via .gitkeep)
+data/*
+!data/.gitkeep
+data/*.db*

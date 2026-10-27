@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PeakHook — Webhook Vault, Inspector &amp; Replay Gateway</title>
+  <meta name="description" content="Self-hosted webhook vault: capture, inspect, forward and replay webhooks for n8n, Make and Zapier.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="login" id="login" hidden>
+  <form class="login-card" id="login-form">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 24 13 8l5 9 3-5 7 12z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></svg>
+    <h1>Peak<b>Hook</b></h1>
+    <p>Enter the <code>ADMIN_PASSWORD</code> you set for this server.</p>
+    <input type="password" id="login-pw" placeholder="Admin password" autocomplete="current-password" required autofocus>
+    <button class="btn btn-primary" type="submit">Sign in</button>
+    <p class="form-msg" id="login-msg" role="alert"></p>
+  </form>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 24 13 8l5 9 3-5 7 12z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></svg>
+    <span class="brand-name">Peak<b>Hook</b></span>
+    <span class="chip" id="version">v1</span>
+    <span class="live" id="live" title="Updates every 3 seconds"><i></i> Live</span>
+  </div>
+  <div class="top-actions">
+    <button class="btn btn-primary" id="btn-demo" type="button">Load Demo Webhooks</button>
+    <button class="btn btn-ghost" id="btn-clear" type="button">Clear all logs</button>
+    <button class="btn btn-ghost" id="btn-logout" type="button">Sign out</button>
+  </div>
+</header>
+
+<div class="banner" id="weak-banner" hidden>
+  You are using a default <code>ADMIN_PASSWORD</code>. Change it in your <code>.env</code> file or Docker settings and restart before exposing PeakHook to the internet.
+</div>
+
+<main class="layout">
+  <section class="panel endpoints" aria-labelledby="ep-title">
+    <h2 id="ep-title">Webhook URLs</h2>
+    <form id="ep-form" class="ep-form" autocomplete="off">
+      <input name="name" placeholder="Name, e.g. Stripe payments" maxlength="80" required>
+      <input name="slug" placeholder="Custom slug (optional)" maxlength="64" pattern="[A-Za-z0-9_\-]{3,64}">
+      <input name="forward_url" type="url" placeholder="Forward to n8n / Make / Zapier URL (optional)">
+      <button class="btn btn-primary" type="submit">Create endpoint</button>
+      <p class="form-msg" id="ep-msg" role="status"></p>
+    </form>
+    <ul class="ep-list" id="ep-list"></ul>
+  </section>
+
+  <section class="panel stream" aria-labelledby="stream-title">
+    <div class="stream-head">
+      <h2 id="stream-title">Incoming webhooks <span class="count" id="count"></span></h2>
+      <select id="filter" aria-label="Filter by endpoint"><option value="">All endpoints</option></select>
+    </div>
+    <ul class="log-list" id="log-list"></ul>
+    <p class="empty" id="empty" hidden>No webhooks yet. Send a request to one of your URLs, or press <b>Load Demo Webhooks</b>.</p>
+  </section>
+
+  <section class="panel detail" id="detail" aria-live="polite">
+    <p class="empty" id="detail-empty">Select a webhook to inspect headers, payload and delivery history.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  Built by <a href="https://peakautomations.online" target="_blank" rel="noopener">Peak Automations (peakautomations.online)</a>
+  — <a href="https://peakautomations.online/tools/" target="_blank" rel="noopener">Free Tools</a> &amp;
+  <a href="https://peakautomations.online/templates/" target="_blank" rel="noopener">Automation Templates</a>
+</footer>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>
