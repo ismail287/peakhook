@@ -1,5 +1,6 @@
 # PeakHook
 
+[![Docker verify](https://github.com/ismail287/peakhook/actions/workflows/docker-verify.yml/badge.svg)](https://github.com/ismail287/peakhook/actions/workflows/docker-verify.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-1DCBAF.svg)](LICENSE)
 [![Docker Ready](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.yml)
 [![Self-Hosted](https://img.shields.io/badge/self--hosted-yes-F0A830.svg)](#quick-start)
@@ -10,10 +11,12 @@ Capture webhooks from Stripe, Shopify, GitHub, Typeform and anything else. Store
 
 ## One-Click Deploy to Hostinger
 
-<!-- TODO: replace this placeholder with the official "Deploy to Hostinger" button once the partner listing is approved. -->
-> **[ Deploy to Hostinger ]** (button coming soon: placeholder for the official Hostinger one-click link)
+<!-- When the official Hostinger Open Source Partner 1-click button is approved, swap this link for it. -->
+[![Deploy to Hostinger VPS](https://img.shields.io/badge/Deploy%20to-Hostinger%20VPS-673DE6?style=for-the-badge)](https://www.hostinger.com/in?REFERRALCODE=digitalbyismail)
 
-Until the button is live, deploy in two minutes on any Hostinger VPS that has Docker (Hostinger's Docker Manager, or SSH):
+*Referral link: if you sign up through it, the author may earn a commission at no extra cost to you. PeakHook runs on any Docker host, so you are free to use another provider.*
+
+Deploy in two minutes on a Hostinger VPS that has Docker (Hostinger's Docker Manager, or SSH):
 
 1. Create a VPS with the **Docker** template and open its Docker Manager (or SSH in).
 2. Create a project from this repository's `docker-compose.yml` (**Compose from URL**, or `git clone` then `docker compose up -d`).
