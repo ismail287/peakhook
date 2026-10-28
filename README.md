@@ -137,6 +137,10 @@ npm test        # starts the server and a mock n8n, and checks every endpoint
 
 Project layout: `server.js` (API, capture, forwarding), `public/` (dashboard), `test/smoke.test.js`, `Dockerfile`, `docker-compose.yml`, `docker-compose.n8n-stack.yml`.
 
+## Browser tools (offline, auditable)
+
+The source of the free tools at <https://peakautomations.online/tools/> lives in [`browser-tools/`](browser-tools/): the exact JavaScript the website loads, plus a single-file offline edition of every tool that runs from `file://` with network access blocked by its Content-Security-Policy. See [browser-tools/README.md](browser-tools/README.md).
+
 ## More from Peak Automations
 
 - **Free browser-based tools:** <https://peakautomations.online/tools/> (n8n workflow sanitizer, webhook PII scrubber, cron visualizer and more)

@@ -1,2 +1,7 @@
 * text=auto eol=lf
 *.sh text eol=lf
+
+# Keep the browser tools byte-identical to what peakautomations.online serves (SHA256SUMS.txt)
+browser-tools/*.html -text
+browser-tools/js/*.js -text
+browser-tools/SHA256SUMS.txt -text

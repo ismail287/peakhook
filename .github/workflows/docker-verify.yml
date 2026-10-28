@@ -70,3 +70,38 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose down -v
+
+  browser-tools:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Files match SHA256SUMS.txt
+        working-directory: browser-tools
+        run: sha256sum -c SHA256SUMS.txt
+
+      - name: Every offline edition blocks network access (CSP connect-src 'none')
+        working-directory: browser-tools
+        run: |
+          for f in *.html; do
+            grep -q "connect-src 'none'" "$f" || { echo "missing CSP in $f"; exit 1; }
+            # no external scripts, stylesheets or fonts may be loaded
+            if grep -Eq '<(script|link)[^>]+(src|href)="https?://' "$f"; then echo "external resource in $f"; exit 1; fi
+          done
+          echo "all offline editions are self-contained"
+
+      - name: Build and serve with Docker
+        run: |
+          docker build -t peak-browser-tools browser-tools
+          docker run -d --name peak-browser-tools -p 8080:80 peak-browser-tools
+          sleep 3
+          curl -f -sS http://localhost:8080/ | grep -q "Peak Automations browser tools"
+          curl -f -sS -o /dev/null http://localhost:8080/curl-to-n8n-converter.html
+          curl -f -sS -o /dev/null http://localhost:8080/js/curl-parser.js
+          echo "browser tools served OK"
+
+      - name: Tear down
+        if: always()
+        run: docker rm -f peak-browser-tools || true
